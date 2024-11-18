@@ -42,7 +42,7 @@ terraform apply
 
 :warning: Running `terraform apply` might fail the first time, due to the stage unable to assume the AWS role. A lag in creating it might be the issue. Re-running `terraform apply` fixes this.
 
-:tip: There's a deprecated resource in one of the modules that might raise an error. I found that commenting it out from this file does the trick `snowflake-snowpipe-integration/terraform/.terraform/modules/storage-integration-aws/storage_integration.tf`
+:note: There's a deprecated resource in one of the modules that might raise an error. I found that commenting it out from this file does the trick `snowflake-snowpipe-integration/terraform/.terraform/modules/storage-integration-aws/storage_integration.tf`
 ```tf
 # resource "snowflake_integration_grant" "this" {
 #   provider         = snowflake.storage_integration_role

@@ -1,8 +1,8 @@
 # snowflake-snowpipe-integration
 
-This is a Terraform project implementing Snowflake's (Automating Snowpipe for Amazon S3)[https://docs.snowflake.com/en/user-guide/data-load-snowpipe-auto-s3] integration.
+This is a Terraform project implementing Snowflake's [Automating Snowpipe for Amazon S3](https://docs.snowflake.com/en/user-guide/data-load-snowpipe-auto-s3) integration.
 
-It does so by reusing Snowflake's terraform modules (storage-integration-aws)[https://registry.terraform.io/modules/Snowflake-Labs/storage-integration-aws/snowflake/latest] and (snowpipe-aws)[https://registry.terraform.io/modules/Snowflake-Labs/snowpipe-aws/snowflake/latest].
+It does so by reusing Snowflake's terraform modules [storage-integration-aws](https://registry.terraform.io/modules/Snowflake-Labs/storage-integration-aws/snowflake/latest) and [snowpipe-aws](https://registry.terraform.io/modules/Snowflake-Labs/snowpipe-aws/snowflake/latest).
 
 
 ## Configuration
@@ -32,7 +32,7 @@ snowflake_service_account = {
   rsa_pub_key_2_path = ""
 }
 ```
-:closed_lock_with_key: Learn more about Snowflake's key-pair authentication here: (Key-pair authentication and key-pair rotation)[https://docs.snowflake.com/en/user-guide/key-pair-auth]
+:closed_lock_with_key: Learn more about Snowflake's key-pair authentication here: [Key-pair authentication and key-pair rotation](https://docs.snowflake.com/en/user-guide/key-pair-auth)
 
 ### Setting up infrastructure
 ```sh

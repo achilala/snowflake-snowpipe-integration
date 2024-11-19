@@ -32,6 +32,7 @@ snowflake_service_account = {
   rsa_pub_key_2_path = ""
 }
 ```
+:closed_lock_with_key: Learn more about Snowflake's key-pair authentication here: (Key-pair authentication and key-pair rotation)[https://docs.snowflake.com/en/user-guide/key-pair-auth]
 
 ### Setting up infrastructure
 ```sh
@@ -42,7 +43,7 @@ terraform apply
 
 :warning: Running `terraform apply` might fail the first time, due to the stage unable to assume the AWS role. A lag in creating it might be the issue. Re-running `terraform apply` fixes this.
 
-:note: There's a deprecated resource in one of the modules that might raise an error. I found that commenting it out from this file does the trick `snowflake-snowpipe-integration/terraform/.terraform/modules/storage-integration-aws/storage_integration.tf`
+:bug: There's a deprecated resource in one of the modules that might raise an error. I found that commenting it out from this file does the trick `snowflake-snowpipe-integration/terraform/.terraform/modules/storage-integration-aws/storage_integration.tf`
 ```tf
 # resource "snowflake_integration_grant" "this" {
 #   provider         = snowflake.storage_integration_role
@@ -81,6 +82,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
 ```sh
 cd airbyte
 python man.py

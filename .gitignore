@@ -1,7 +1,12 @@
+# Virtual environment
+.venv*
+
+# Airbyte
 .cache
 .env
-.venv*
+destination-*
+
+# Terraform
 .terraform*
 *.tfvars
 *.tfstate*
-destination-*

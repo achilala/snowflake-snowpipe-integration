@@ -1,30 +1,16 @@
-# import module from registry
-module "storage-integration-aws" {
-  source  = "Snowflake-Labs/storage-integration-aws/snowflake"
-  version = "0.2.10"
-
-  prefix = local.integration_name
-  env    = local.environment
-
-  providers = {
-    snowflake.storage_integration_role = snowflake
-    aws                                = aws
-  }
-}
-
 # create the schemas
 resource "snowflake_schema" "this" {
-  name         = local.data_source_upper
-  database     = snowflake_database.this.name
+  name         = var.schema_name
+  database     = var.database_name
   is_transient = true
-  comment      = "Stores raw data for the ${local.data_source} data source."
+  comment      = "Stores raw data for the ${var.datasource_name} data source."
 }
 
 # create the tables
 resource "snowflake_table" "this" {
-  database        = snowflake_schema.this.database
-  schema          = snowflake_schema.this.name
-  name            = "USERS"
+  database        = var.database_name
+  schema          = var.schema_name
+  name            = var.table_name
   comment         = "Table for the users data"
   cluster_by      = ["to_date(_LOADED_AT)"]
   change_tracking = false
@@ -44,7 +30,7 @@ resource "snowflake_table" "this" {
     type     = "text"
     nullable = false
     default {
-      constant = var.snowflake_service_account.name
+      constant = var.snowflake_service_account_name
     }
     comment = "ETL user"
   }
@@ -62,16 +48,16 @@ module "my_snowpipe" {
   source  = "Snowflake-Labs/snowpipe-aws/snowflake"
   version = "0.3.1"
 
-  database_name = snowflake_database.this.name
-  schema_name   = snowflake_schema.this.name
-  stage_name    = snowflake_table.this.name
-  pipe_name     = snowflake_table.this.name
+  database_name = var.database_name
+  schema_name   = var.schema_name
+  stage_name    = var.table_name
+  pipe_name     = var.table_name
 
-  aws_s3_url               = lower("${module.storage-integration-aws.bucket_url}${local.data_source}/${snowflake_table.this.name}/")
+  aws_s3_url               = lower("${module.storage-integration-aws.bucket_url}${var.integration.datasource}/${var.table_name}/")
   aws_sns_topic_arn        = module.storage-integration-aws.sns_topic_arn
   storage_integration_name = module.storage-integration-aws.storage_integration_name
 
-  destination_table_name = snowflake_table.this.name
+  destination_table_name = var.table_name
   custom_ingest_columns = {
     target_columns = [
       "DOCUMENT",

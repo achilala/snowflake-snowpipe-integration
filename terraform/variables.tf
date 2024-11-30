@@ -24,10 +24,10 @@ variable "snowflake" {
 variable "snowflake_service_account" {
   description = "The configuration for the Snowflake service account"
   type = object({
-    name               = string #Name of the Snowflake user, if any.
-    password           = string #Password for the Snowflake user, if any.
-    rsa_pub_key_path   = string #Path to the RSA public key for the Snowflake user, if any.
-    rsa_pub_key_2_path = string #Path to the second RSA public key for the Snowflake user, if any.
+    username           = string # Name of the Snowflake user, if any.
+    password           = string # Password for the Snowflake user, if any.
+    rsa_pub_key_path   = string # Path to the RSA public key for the Snowflake user, if any.
+    rsa_pub_key_2_path = string # Path to the second RSA public key for the Snowflake user, if any.
   })
   sensitive = true
 }

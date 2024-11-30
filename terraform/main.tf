@@ -50,7 +50,7 @@ resource "snowflake_table" "this" {
     type     = "text"
     nullable = false
     default {
-      constant = var.snowflake_service_account.name
+      constant = var.snowflake_service_account.username
     }
     comment = "ETL user"
   }
@@ -65,26 +65,26 @@ resource "snowflake_table" "this" {
 
 # Create the role
 resource "snowflake_account_role" "this" {
-  name    = var.snowflake_service_account.name
-  comment = "This is the default role for the ${var.snowflake_service_account.name} user."
+  name    = var.snowflake_service_account.username
+  comment = "This is the default role for the ${var.snowflake_service_account.username} user."
 }
 
 # Create the warehouse
 resource "snowflake_warehouse" "this" {
-  name           = var.snowflake_service_account.name
+  name           = var.snowflake_service_account.username
   warehouse_size = "XSMALL"
-  comment        = "This is the default warehouse for the ${var.snowflake_service_account.name} user."
+  comment        = "This is the default warehouse for the ${var.snowflake_service_account.username} user."
 }
 
 # Create the user
 resource "snowflake_user" "this" {
-  name              = var.snowflake_service_account.name
+  name              = var.snowflake_service_account.username
   password          = var.snowflake_service_account.password
   rsa_public_key    = file(var.snowflake_service_account.rsa_pub_key_path)
   rsa_public_key_2  = file(var.snowflake_service_account.rsa_pub_key_2_path)
   default_role      = snowflake_account_role.this.name
   default_warehouse = snowflake_warehouse.this.name
-  comment           = "This is the Snowflake account for the ${var.snowflake_service_account.name} user."
+  comment           = "This is the Snowflake account for the ${var.snowflake_service_account.username} user."
 }
 
 # Grant warehouse permissions to the role

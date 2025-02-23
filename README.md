@@ -36,7 +36,7 @@ snowflake_service_account = {
 
 ### Setting up infrastructure
 ```sh
-cd terraform
+cd terraform/environment/production
 terraform init
 terraform apply
 ```
@@ -77,7 +77,7 @@ S3_BUCKET_REGION=""
 
 ## Landing data 
 ```sh
-cd ../snowflake-snowpipe-integration
+cd ../../../snowflake-snowpipe-integration
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -86,4 +86,15 @@ pip install -r requirements.txt
 ```sh
 cd airbyte
 python man.py
+```
+
+## Teardown setup
+```sh
+aws s3 rm s3://snowflake-aws-integration-dev-bucket/ --recursive --dryrun
+aws s3 rm s3://snowflake-aws-integration-dev-bucket/ --recursive
+```
+
+```sh
+cd ../terraform/environment/production
+terraform destroy
 ```

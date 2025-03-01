@@ -11,12 +11,13 @@ variable "aws" {
 variable "snowflake" {
   description = "The Snowflake configuration"
   type = object({
-    account          = string
-    user             = string
-    authenticator    = string
-    private_key_path = string
-    warehouse        = string
-    role             = string
+    organization_name = string
+    account_name      = string
+    user              = string
+    authenticator     = string
+    private_key_path  = string
+    warehouse         = string
+    role              = string
   })
   sensitive = true
 }

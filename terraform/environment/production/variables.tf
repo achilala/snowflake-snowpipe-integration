@@ -2,6 +2,7 @@ variable "aws" {
   description = "The AWS configuration variables"
   type = object({
     region     = string
+    role_arn   = string
     access_key = string
     secret_key = string
   })

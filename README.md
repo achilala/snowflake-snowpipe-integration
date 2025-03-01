@@ -98,3 +98,19 @@ aws s3 rm s3://snowflake-aws-integration-dev-bucket/ --recursive
 cd ../terraform/environment/production
 terraform destroy
 ```
+
+```sql
+create or replace iceberg table raw.gitlab.users_flattened base_location = 'iceberg/analytics/staging/users_flattened' as
+select document:_airbyte_extracted_at::timestamp(6) as _airbyte_extracted_at
+      ,document:_airbyte_generation_id::number as _airbyte_generation_id
+      ,document:_airbyte_meta::varchar as _airbyte_meta
+      ,document:_airbyte_raw_id::varchar as _airbyte_raw_id
+      ,document:avatar_url::varchar as avatar_url
+      ,document:id::number as id
+      ,document:locked::boolean as locked
+      ,document:name::varchar as name
+      ,document:state::varchar as state
+      ,document:username::varchar as username
+      ,document:web_url::varchar as web_url
+  from raw.gitlab.users;
+```

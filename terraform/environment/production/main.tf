@@ -12,10 +12,24 @@ module "storage-integration-aws" {
   }
 }
 
+# create external volume
+resource "snowflake_external_volume" "this" {
+  name = local.integration_name_upper
+  storage_location {
+    storage_location_name = local.integration_name_upper
+    storage_base_url      = module.storage-integration-aws.bucket_url
+    storage_provider      = "S3"
+    storage_aws_role_arn  = var.aws.role_arn
+  }
+  comment = "This is external volume to use with iceberg tables."
+}
+
 # create the databases
 resource "snowflake_database" "this" {
-  name    = "RAW"
-  comment = "This is the landing database for raw data."
+  name            = "RAW"
+  catalog         = "SNOWFLAKE"
+  external_volume = snowflake_external_volume.this.name
+  comment         = "This is the landing database for raw data."
 }
 
 # create the schemas

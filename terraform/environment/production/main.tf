@@ -147,7 +147,7 @@ module "my_snowpipe" {
   stage_name    = each.value.table.name
   pipe_name     = each.value.table.name
 
-  aws_s3_url               = lower("${module.storage-integration-aws.bucket_url}${local.data_source}/${each.value.table.name}/")
+  aws_s3_url               = lower("${module.storage-integration-aws.bucket_url}${snowflake_schema.this["${each.value.db_key}.${each.value.schema_key}"].name}/${each.value.table.name}/")
   aws_sns_topic_arn        = module.storage-integration-aws.sns_topic_arn
   storage_integration_name = module.storage-integration-aws.storage_integration_name
 

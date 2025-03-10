@@ -37,6 +37,7 @@ for stream in source.get_selected_streams():
 
 source.select_streams(
     [
+        "merge_requests",
         "users"
     ]
 )

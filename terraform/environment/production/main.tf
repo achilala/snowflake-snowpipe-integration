@@ -26,26 +26,32 @@ resource "snowflake_external_volume" "this" {
 
 # create the databases
 resource "snowflake_database" "this" {
-  name            = "RAW"
+  for_each = var.datasources
+
+  name            = each.value.name
   catalog         = "SNOWFLAKE"
   external_volume = snowflake_external_volume.this.name
-  comment         = "This is the landing database for raw data."
+  comment         = each.value.name
 }
 
 # create the schemas
 resource "snowflake_schema" "this" {
-  name         = local.data_source_upper
-  database     = snowflake_database.this.name
+  for_each = { for s in local.schemas : "${s.db_key}.${s.schema_key}" => s }
+
+  database     = snowflake_database.this[each.value.db_key].name
   is_transient = true
-  comment      = "Stores raw data for the ${local.data_source} data source."
+  name         = each.value.schema.name
+  comment      = each.value.schema.comment
 }
 
 # create the tables
-resource "snowflake_table" "this" {
-  database        = snowflake_schema.this.database
-  schema          = snowflake_schema.this.name
-  name            = "USERS"
-  comment         = "Table for the users data"
+resource "snowflake_table" "tables" {
+  for_each = { for t in local.tables : "${t.db_key}.${t.schema_key}.${t.table_key}" => t }
+
+  database        = snowflake_database.this[each.value.db_key].name
+  schema          = snowflake_schema.this["${each.value.db_key}.${each.value.schema_key}"].name
+  name            = each.value.table.name
+  comment         = each.value.table.comment
   cluster_by      = ["to_date(_LOADED_AT)"]
   change_tracking = false
 
@@ -113,11 +119,13 @@ resource "snowflake_grant_privileges_to_account_role" "wh" {
 
 # Grant database permissions to the role
 resource "snowflake_grant_privileges_to_account_role" "db" {
+  for_each = var.datasources
+
   all_privileges    = true
   account_role_name = snowflake_account_role.this.name
   on_account_object {
     object_type = "DATABASE"
-    object_name = snowflake_database.this.name
+    object_name = each.value.name
   }
 }
 
@@ -132,16 +140,18 @@ module "my_snowpipe" {
   source  = "Snowflake-Labs/snowpipe-aws/snowflake"
   version = "0.3.1"
 
-  database_name = snowflake_database.this.name
-  schema_name   = snowflake_schema.this.name
-  stage_name    = snowflake_table.this.name
-  pipe_name     = snowflake_table.this.name
+  for_each = { for t in local.tables : "${t.db_key}.${t.schema_key}.${t.table_key}" => t }
 
-  aws_s3_url               = lower("${module.storage-integration-aws.bucket_url}${local.data_source}/${snowflake_table.this.name}/")
+  database_name = snowflake_database.this[each.value.db_key].name
+  schema_name   = snowflake_schema.this["${each.value.db_key}.${each.value.schema_key}"].name
+  stage_name    = each.value.table.name
+  pipe_name     = each.value.table.name
+
+  aws_s3_url               = lower("${module.storage-integration-aws.bucket_url}${local.data_source}/${each.value.table.name}/")
   aws_sns_topic_arn        = module.storage-integration-aws.sns_topic_arn
   storage_integration_name = module.storage-integration-aws.storage_integration_name
 
-  destination_table_name = snowflake_table.this.name
+  destination_table_name = each.value.table.name
   custom_ingest_columns = {
     target_columns = [
       "DOCUMENT",
@@ -151,7 +161,7 @@ module "my_snowpipe" {
     ]
   }
 
-  comment = "Ingest Pipe."
+  comment = "This snowpipe loads data that is available in the stage ${snowflake_database.this[each.value.db_key].name}.${snowflake_schema.this["${each.value.db_key}.${each.value.schema_key}"].name}.${each.value.table.name}."
   providers = {
     snowflake.ingest_role = snowflake
   }

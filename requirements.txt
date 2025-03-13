@@ -1,2 +1,5 @@
 airbyte
+boto3
+python-dotenv
+requests
 termcolor

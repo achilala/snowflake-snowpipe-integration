@@ -31,6 +31,22 @@ variable "datasources" {
           }
         }
       }
+    },
+    analytics = {
+      name    = "ANALYTICS"
+      comment = "This database stores transformed data for analytics."
+      schemas = {
+        staging = {
+          name    = "STAGING"
+          comment = "This schema stores flattened raw data."
+          tables = {}
+        },
+        mart = {
+          name    = "MART"
+          comment = "This schema stores transformed and analytics-ready data."
+          tables = {}
+        }
+      }
     }
   }
 }
